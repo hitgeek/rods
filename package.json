@@ -1,0 +1,9 @@
+{
+  "name": "rods",
+  "version": "0.1.0-beta1",
+  "description": "a micro ORM using knex",
+  "main": "lib/index.js",
+  "keywords": ["knex", "orm", "sql"],
+  "author": "",
+  "license": "MIT"
+}

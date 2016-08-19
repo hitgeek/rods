@@ -4,6 +4,14 @@
   "description": "a micro ORM using knex",
   "main": "lib/index.js",
   "keywords": ["knex", "orm", "sql"],
-  "author": "",
-  "license": "MIT"
+  "author": "Bob Rupp <bob@rupp.io>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hitgeek/rods.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hitgeek/rods/issues"
+  },
+  "homepage": "https://github.com/hitgeek/rods#readme"
 }

@@ -1,9 +1,16 @@
 {
   "name": "rods",
-  "version": "0.1.0-beta1",
+  "version": "0.1.1-beta",
   "description": "a micro ORM using knex",
   "main": "lib/index.js",
-  "keywords": ["knex", "orm", "sql"],
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "knex",
+    "orm",
+    "sql"
+  ],
   "author": "Bob Rupp <bob@rupp.io>",
   "license": "MIT",
   "repository": {
@@ -13,5 +20,12 @@
   "bugs": {
     "url": "https://github.com/hitgeek/rods/issues"
   },
-  "homepage": "https://github.com/hitgeek/rods#readme"
+  "homepage": "https://github.com/hitgeek/rods#readme",
+  "devDependencies": {
+    "knex": "^0.11.10",
+    "sqlite3": "^3.1.4"
+  },
+  "dependencies": {
+    "async": "^2.0.1"
+  }
 }

@@ -21,15 +21,15 @@ var knex = require('knex')({
 var rods = require('rods')(knex)
 ```
 
-###Mapping Tables
+###Mapping Models
 ```js
 
 var db = {};
 
-//map tables using the table name
+//map models using the table name
 //tables should already exists
 //see knex documentation for Schema Building and Migrations
-db.user = rods.table('users');
+db.user = rods.model('users');
 ```
 
 ###Create Models

@@ -132,6 +132,38 @@ u.save(args, function(err) {
 
 ```
 
+###Population
+Population provides a convient syntax for populating foreign references with associated objects. Population does individual queries for each reference, so it may not be the most efficient option. 
+
+Population must be used with `.first()` and `select()`
+
+```.populate(to, from, with, multi)```
+
+to: name of property to be assigned
+
+from: the db.table object to get/fetch from
+
+with: the query to use inside of get/fetch
+
+multi: true/false (true=the property is an array) (optional defaults to false)
+
+```js
+//In this example user can have multiple groups. user_group is a cross reference table between user & group
+//Notice how the results of the 1st populate are used in the second populate
+db.user
+   .first()
+   .populate('user_groups', db.user_group, function(x) {
+     return {user_id: x.id}; //query that will be used for db.user_group.fetch
+   }, true)
+   .populate('groups', db.group, function(x) {
+     return x.user_groups.map(x => x.group_id); //query used for db.group.fetch
+   }, true)
+   .exec(function(err, u) {
+     assert.equal(u.groups[0].name, 'admins');
+     done();
+   });
+```
+
 ###Options
 
 1. id: ORM requires each table have 1 single column primary key. It assumes that primary key is named 'id'. You can change this, globally or for a single table.

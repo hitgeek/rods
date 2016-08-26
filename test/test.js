@@ -56,6 +56,7 @@ describe('rods', function() {
           name: 'bob'
         });
         assert(u._isNew);
+        console.log(u);
         assert.equal(u.name, 'bob');
       });
     });
@@ -73,6 +74,18 @@ describe('rods', function() {
         db.user.get(1, function(err, u) {
           assert.equal(null, err);
           assert.equal(u.name, 'bob');
+          done();
+        });
+      });
+    });
+    describe('.toObject', function() {
+      it('should return the raw object', function(done) {
+        db.user.get(1, function(err, u) {
+          var o = u.toObject();
+          assert.equal(o.id, 1);
+          assert.equal(o.name, 'bob');
+          assert.equal(o.created_at, null);
+          assert.equal(o.updated_at, null);
           done();
         });
       });

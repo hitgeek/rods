@@ -1,6 +1,6 @@
 {
   "name": "rods",
-  "version": "0.1.1-beta",
+  "version": "1.0.0-beta",
   "description": "a micro ORM using knex",
   "main": "lib/index.js",
   "scripts": {

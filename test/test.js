@@ -5,6 +5,7 @@ var rods   = require('../lib');
 
 var db = {};
 var u;
+var history = [];
 
 describe('rods', function() {
 
@@ -42,10 +43,10 @@ describe('rods', function() {
   });
 
   describe('.table()', function() {
-    it('should create a table', function() {
-      db.user       = rods.table('users');
-      db.group      = rods.table('groups');
-      db.user_group = rods.table('user_groups');
+    it('should create models', function() {
+      db.user       = rods.model('users');
+      db.group      = rods.model('groups');
+      db.user_group = rods.model('user_groups');
     });
   });
   describe('table', function() {
@@ -107,9 +108,35 @@ describe('rods', function() {
         });
       });
     });
+    describe('hooks', function() {
+      it('should add hooks', function(done) {
+        rods.pre('save', function(args, data) {
+          var timestamp = new Date();
+          if (data._isNew) {
+            data.created_at = timestamp;
+          }
+          data.updated_at = timestamp;
+        });
+        rods.post('save', function(args, orig, data) {
+          history.push({original: orig, new: data});
+        });
+
+        var u = new db.user({name: 'john'});
+        u.save(function(err) {
+          assert(!err);
+          db.user.get({name: 'john'}, function(err, x) {
+            assert(!err);
+            assert(x.created_at);
+            assert(x.updated_at);
+            assert(history.length == 1)
+            done();
+          });
+        });
+      });
+    });
     describe('.populate()', function() {
       it('should populate the model', function(done) {
-        db.user_group
+        db.user
             .first()
             .populate('user_groups', db.user_group, function(x) {
               return {user_id: x.id};
@@ -123,6 +150,22 @@ describe('rods', function() {
             });
       });
     });
+    describe('.populate()', function() {
+      it('should populate multiple models', function(done) {
+        db.user
+            .select()
+            .populate('user_groups', db.user_group, function(x) {
+              return {user_id: x.id};
+            }, true)
+            .populate('groups', db.group, function(x) {
+              return x.user_groups.map(x => x.group_id);
+            }, true)
+            .exec(function(err, data) {
+              assert.equal(data[0].groups[0].name, 'admins');
+              done();
+            });
+      })
+    })
   });
 
   after(function() {

@@ -55,11 +55,11 @@ u.save(function(err, res) {
 db.user.get(1, function(err, u) {
   u.admin = true;
   u.save(function(err) {
-    
+
   });
 });
 db.user.get('id-if-it-is-a-string', function(err, u) {});
-db.user.get({id: 'value', function(err, u) {});
+db.user.get({id: 'value'}, function(err, u) {});
 
 db.user.fetch([1, 2, 3], function(err, users) {
 
@@ -78,7 +78,7 @@ db.user
   .join('user_groups', 'users.id', 'user_groups.user_id')
   .join('groups', 'user_groups.group_id', 'groups.id')
   .where('groups.name' '=', 'Administrators')
-  .exec(function(err, u) { 
+  .exec(function(err, u) {
     //returns 1 user
   });
 
@@ -87,7 +87,7 @@ db.user
   .join('user_groups', 'users.id', 'user_groups.user_id')
   .join('groups', 'user_groups.group_id', 'groups.id')
   .where('groups.name' '=', 'Administrators')
-  .exec(function(err, users) { 
+  .exec(function(err, users) {
     //returns multiple users
   });
 
@@ -133,11 +133,11 @@ u.save(args, function(err) {
 ```
 
 ###Population
-Population provides a convient syntax for populating foreign references with associated objects. Population does individual queries for each reference, so it may not be the most efficient option. 
+Population provides a convient syntax for populating foreign references with associated objects. Population does individual queries for each reference, so it may not be the most efficient option.
 
 Population must be used with `.first()` and `select()`
 
-```.populate(to, from, with, multi)```
+```.populate(to, from, with)```
 
 to: name of property to be assigned
 
@@ -152,12 +152,18 @@ multi: true/false (true=the property is an array) (optional defaults to false)
 //Notice how the results of the 1st populate are used in the second populate
 db.user
    .first()
-   .populate('user_groups', db.user_group, function(x) {
-     return {user_id: x.id}; //query that will be used for db.user_group.fetch
-   }, true)
+   .populate('user_groups', db.user_group.select, function(x) {
+     //query that will be used for "where"
+     //first value is the key, second value is the value
+     //if the second value is an Array whereIn is used
+     return ['user_id', x.id];
+   })
    .populate('groups', db.group, function(x) {
-     return x.user_groups.map(x => x.group_id); //query used for db.group.fetch
-   }, true)
+     //query that will be used for "where"
+     //first value is the key, second value is the value
+     //if the second value is an Array whereIn is used
+     return ['id', x.user_groups.map(x => x.group_id)];
+   })
    .exec(function(err, u) {
      assert.equal(u.groups[0].name, 'admins');
      done();

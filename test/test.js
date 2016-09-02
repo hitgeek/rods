@@ -56,7 +56,6 @@ describe('rods', function() {
           name: 'bob'
         });
         assert(u._isNew);
-        console.log(u);
         assert.equal(u.name, 'bob');
       });
     });
@@ -151,12 +150,12 @@ describe('rods', function() {
       it('should populate the model', function(done) {
         db.user
             .first()
-            .populate('user_groups', db.user_group, function(x) {
-              return {user_id: x.id};
-            }, true)
-            .populate('groups', db.group, function(x) {
-              return x.user_groups.map(x => x.group_id);
-            }, true)
+            .populate('user_groups', db.user_group.select(), function(x) {
+              return ['user_id', x.id];
+            })
+            .populate('groups', db.group.select(), function(x) {
+              return ['id', x.user_groups.map(x => x.group_id)];
+            })
             .exec(function(err, u) {
               assert.equal(u.groups[0].name, 'admins');
               done();
@@ -167,12 +166,12 @@ describe('rods', function() {
       it('should populate multiple models', function(done) {
         db.user
             .select()
-            .populate('user_groups', db.user_group, function(x) {
-              return {user_id: x.id};
-            }, true)
-            .populate('groups', db.group, function(x) {
-              return x.user_groups.map(x => x.group_id);
-            }, true)
+            .populate('user_groups', db.user_group.select(), function(x) {
+              return ['user_id', x.id];
+            })
+            .populate('groups', db.group.select(), function(x) {
+              return ['id', x.user_groups.map(x => x.group_id)];
+            })
             .exec(function(err, data) {
               assert.equal(data[0].groups[0].name, 'admins');
               done();

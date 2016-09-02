@@ -1,5 +1,7 @@
 #rods
-a micro SQL ORM using knex
+a micro SQL ORM using knex 
+
+Check out a [Demo App](https://github.com/hitgeek/rods-blog)
 
 ```
 npm install [pg, mysql, mariasql, sqlite3]

@@ -120,6 +120,20 @@ describe('rods', function() {
         });
       });
     });
+    describe('.first()', function() {
+      it('should not fail if nothing is returned', function(done) {
+        db.user
+            .first()
+            .where({'users.id': 'thereisnotthisid'})
+            .join('user_groups', 'users.id', '=', 'user_groups.user_id')
+            .join('groups', 'user_groups.group_id', '=', 'groups.id')
+            .exec(function(err, u) {
+              assert.equal(null, err);
+              assert.equal(null, u);
+              done();
+            });
+      });
+    })
     describe('hooks', function() {
       it('should add hooks', function(done) {
         rods.pre('save', function(args, data) {

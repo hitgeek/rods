@@ -68,6 +68,18 @@ describe('rods', function() {
         });
       })
     });
+    describe('.saveAsync()', async function() {
+      it('should save a user', async function() {
+        var u = await db.user.getAsync({name: 'bob'});
+        assert.equal(u.name, 'bob');
+        u.name = 'bob update';
+        await u.saveAsync();
+        var u = await db.user.getAsync(1);
+        assert.equal(u.name, 'bob update');
+        u.name = 'bob';
+        await u.saveAsync();
+      })
+    });
     describe('.get()', function() {
       it('should get a user', function(done) {
         db.user.get(1, function(err, u) {

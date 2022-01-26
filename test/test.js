@@ -77,6 +77,12 @@ describe('rods', function() {
         });
       });
     });
+    describe('.getAsync()', async function() {
+      it('should get a user async', async function() {
+        var u = await db.user.getAsync(1);
+        assert.equal(u.name, 'bob');
+      });
+    });
     describe('.toObject', function() {
       it('should return the raw object', function(done) {
         db.user.get(1, function(err, u) {
@@ -101,6 +107,12 @@ describe('rods', function() {
         });
       });
     });
+    describe('.fetchAsync', async function() {
+      it('should fetch users', async function() {
+        var data = await db.user.fetchAsync({});
+        assert.equal(data.length, 2);
+      });
+    })
     describe('.first()', function() {
       it('should return 1 user using join', function(done) {
         var g = new db.group({name: 'admins'});
@@ -120,6 +132,19 @@ describe('rods', function() {
         });
       });
     });
+    describe('.firstAsync()', async function() {
+      it('should return 1 user using join', async function() {
+        var g = new db.group({name: 'admins'});
+
+        var u = await db.user
+          .first()
+          .join('user_groups', 'users.id', '=', 'user_groups.user_id')
+          .join('groups', 'user_groups.group_id', '=', 'groups.id')
+          .execAsync();
+
+        assert.equal(u.name, 'bob');
+      });
+    });
     describe('.first()', function() {
       it('should not fail if nothing is returned', function(done) {
         db.user
@@ -132,6 +157,17 @@ describe('rods', function() {
               assert.equal(null, u);
               done();
             });
+      });
+    })
+    describe('.firstAsync()', async function() {
+      it('should not fail if nothing is returned', async function() {
+        var u = await db.user
+            .first()
+            .where({'users.id': 'thereisnotthisid'})
+            .join('user_groups', 'users.id', '=', 'user_groups.user_id')
+            .join('groups', 'user_groups.group_id', '=', 'groups.id')
+            .execAsync();
+        assert.equal(null, u);
       });
     })
     describe('hooks', function() {
@@ -176,6 +212,21 @@ describe('rods', function() {
             });
       });
     });
+    describe('.populateAsync()', async function() {
+      it('should populate the model', async function() {
+        var u = await db.user
+            .first()
+            .populate('user_groups', db.user_group.select(), function(x) {
+              return ['user_id', x.id];
+            })
+            .populate('groups', db.group.select(), function(x) {
+              return ['id', x.user_groups.map(x => x.group_id)];
+            })
+            .execAsync();
+
+        assert.equal(u.groups[0].name, 'admins');
+      });
+    });
     describe('.populate()', function() {
       it('should populate multiple models', function(done) {
         db.user
@@ -190,6 +241,20 @@ describe('rods', function() {
               assert.equal(data[0].groups[0].name, 'admins');
               done();
             });
+      })
+    })
+    describe('.populateAsync ()', async function() {
+      it('should populate multiple models', async function() {
+       var data = await db.user
+            .select()
+            .populate('user_groups', db.user_group.select(), function(x) {
+              return ['user_id', x.id];
+            })
+            .populate('groups', db.group.select(), function(x) {
+              return ['id', x.user_groups.map(x => x.group_id)];
+            })
+            .execAsync();
+          assert.equal(data[0].groups[0].name, 'admins');
       })
     })
   });
